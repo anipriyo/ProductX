@@ -233,7 +233,6 @@ package productx;
 //        return String.valueOf(10000000 + new Random().nextInt(90000000));
 //    }
 //}
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
@@ -246,6 +245,7 @@ import java.util.regex.Pattern;
 import javax.swing.border.EmptyBorder;
 
 public class ProductX {
+
     private static Connection con;
     private static final Color PRIMARY_COLOR2 = new Color(41, 128, 185); // Blue
     private static final Color ACCENT_COLOR = new Color(39, 174, 96);   // Green
@@ -254,6 +254,96 @@ public class ProductX {
     private static final Font TITLE_FONT = new Font("Arial", Font.BOLD, 24);
     private static final Font LABEL_FONT = new Font("Arial", Font.PLAIN, 14);
     private static final Font BUTTON_FONT = new Font("Arial", Font.BOLD, 14);
+
+    private static void showAdminLoginScreen() {
+        JFrame frame = createBaseFrame("Admin Login", 400, 250);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
+        mainPanel.setBackground(BG_COLOR);
+
+        // Title
+        JLabel titleLabel = new JLabel("Admin Login");
+        titleLabel.setFont(TITLE_FONT);
+        titleLabel.setForeground(PRIMARY_COLOR2);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Password Field
+        JPanel passPanel = new JPanel(new BorderLayout(10, 0));
+        passPanel.setBackground(BG_COLOR);
+        JLabel passLabel = new JLabel("Admin Password:");
+        passLabel.setFont(LABEL_FONT);
+        passLabel.setForeground(TEXT_COLOR);
+        JPasswordField txtPassword = new JPasswordField();
+        txtPassword.setFont(LABEL_FONT);
+        txtPassword.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+        addFocusEffect(txtPassword);
+        passPanel.add(passLabel, BorderLayout.NORTH);
+        passPanel.add(txtPassword, BorderLayout.CENTER);
+
+        // Button panel
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 10));
+        buttonPanel.setBackground(BG_COLOR);
+        buttonPanel.setBorder(new EmptyBorder(0, 50, 0, 50));
+
+        JButton loginBtn = createStyledButton("Login", PRIMARY_COLOR2);
+        JButton backBtn = createStyledButton("Back", Color.GRAY);
+
+        loginBtn.addActionListener(e -> {
+            String password = new String(txtPassword.getPassword());
+
+            try {
+                // Check if connection is valid before proceeding
+                if (con == null || con.isClosed()) {
+                    JOptionPane.showMessageDialog(frame,
+                            "Database connection is not established. Please reconnect.",
+                            "Connection Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    connectToDatabase(); // Attempt to reestablish connection
+                    return;
+                }
+
+                if (password.equals("Admin@ProductX")) {
+                    frame.dispose();
+                    // Ensure you pass the connection explicitly
+                    SwingUtilities.invokeLater(() -> new AdminPage(con));
+                } else {
+                    JOptionPane.showMessageDialog(frame,
+                            "Incorrect Admin Password",
+                            "Login Failed",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(frame,
+                        "An error occurred: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        backBtn.addActionListener(e -> {
+            frame.dispose();
+            showLoginSignup();
+        });
+
+        buttonPanel.add(loginBtn);
+        buttonPanel.add(backBtn);
+
+        // Add components to main panel
+        mainPanel.add(titleLabel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        mainPanel.add(passPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        mainPanel.add(buttonPanel);
+
+        frame.add(mainPanel);
+        frame.setVisible(true);
+    }
 
     public static void main(String[] args) {
         // Set the look and feel to system default
@@ -287,13 +377,13 @@ public class ProductX {
 
     private static void showLoginSignup() {
         JFrame frame = createBaseFrame("Welcome to ProductX", 500, 400);
-        
+
         // Main panel with padding
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
         mainPanel.setBackground(BG_COLOR);
-        
+
         // Logo/Title panel
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(BG_COLOR);
@@ -301,65 +391,71 @@ public class ProductX {
         logoLabel.setFont(TITLE_FONT);
         logoLabel.setForeground(PRIMARY_COLOR2);
         titlePanel.add(logoLabel);
-        
+
         // Welcome message
         JLabel welcomeLabel = new JLabel("Welcome! Please log in or create an account");
         welcomeLabel.setFont(LABEL_FONT);
         welcomeLabel.setForeground(TEXT_COLOR);
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         // Button panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(2, 1, 0, 10));
         buttonPanel.setBackground(BG_COLOR);
         buttonPanel.setBorder(new EmptyBorder(20, 50, 20, 50));
-        
+
         JButton loginBtn = createStyledButton("Login", PRIMARY_COLOR2);
         JButton signupBtn = createStyledButton("Create Account", ACCENT_COLOR);
-        
+        JButton adminLoginBtn = createStyledButton("Admin Login", Color.DARK_GRAY);
+        adminLoginBtn.addActionListener(e -> {
+            frame.dispose();
+            showAdminLoginScreen();
+        });
+
         loginBtn.addActionListener(e -> {
             frame.dispose();
             showLoginScreen();
         });
-        
+
         signupBtn.addActionListener(e -> {
             frame.dispose();
             showSignupScreen();
         });
-        
+
         buttonPanel.add(loginBtn);
+        buttonPanel.add(adminLoginBtn);
         buttonPanel.add(signupBtn);
-        
+
         // Add components to main panel with spacing
         mainPanel.add(titlePanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         mainPanel.add(welcomeLabel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 40)));
         mainPanel.add(buttonPanel);
-        
+
         frame.add(mainPanel);
         frame.setVisible(true);
     }
 
     private static void showLoginScreen() {
         JFrame frame = createBaseFrame("Login to ProductX", 500, 400);
-        
+
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
         mainPanel.setBackground(BG_COLOR);
-        
+
         // Title
         JLabel titleLabel = new JLabel("Login");
         titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(PRIMARY_COLOR2);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         // Form panel
         JPanel formPanel = new JPanel(new GridLayout(3, 1, 0, 10));
         formPanel.setBackground(BG_COLOR);
         formPanel.setBorder(new EmptyBorder(20, 50, 20, 50));
-        
+
         // CID Field
         JPanel cidPanel = new JPanel(new BorderLayout(10, 0));
         cidPanel.setBackground(BG_COLOR);
@@ -369,13 +465,13 @@ public class ProductX {
         JTextField txtCID = new JTextField();
         txtCID.setFont(LABEL_FONT);
         txtCID.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         addFocusEffect(txtCID);
         cidPanel.add(cidLabel, BorderLayout.NORTH);
         cidPanel.add(txtCID, BorderLayout.CENTER);
-        
+
         // Password Field
         JPanel passPanel = new JPanel(new BorderLayout(10, 0));
         passPanel.setBackground(BG_COLOR);
@@ -385,13 +481,13 @@ public class ProductX {
         JPasswordField txtPassword = new JPasswordField();
         txtPassword.setFont(LABEL_FONT);
         txtPassword.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         addFocusEffect(txtPassword);
         passPanel.add(passLabel, BorderLayout.NORTH);
         passPanel.add(txtPassword, BorderLayout.CENTER);
-        
+
         // Remember me checkbox
         JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         optionsPanel.setBackground(BG_COLOR);
@@ -399,28 +495,28 @@ public class ProductX {
         rememberMe.setFont(new Font("Arial", Font.PLAIN, 12));
         rememberMe.setBackground(BG_COLOR);
         optionsPanel.add(rememberMe);
-        
+
         formPanel.add(cidPanel);
         formPanel.add(passPanel);
         formPanel.add(optionsPanel);
-        
+
         // Button panel
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 10));
         buttonPanel.setBackground(BG_COLOR);
         buttonPanel.setBorder(new EmptyBorder(0, 50, 0, 50));
-        
+
         JButton loginBtn = createStyledButton("Login", PRIMARY_COLOR2);
         JButton backBtn = createStyledButton("Back", Color.GRAY);
-        
+
         loginBtn.addActionListener(e -> {
             String cid = txtCID.getText();
             String password = new String(txtPassword.getPassword());
-            
+
             if (cid.isEmpty() || password.isEmpty()) {
                 showError(frame, "Please fill in all fields");
                 return;
             }
-            
+
             if (authenticateUser(cid, password)) {
                 frame.dispose();
                 showSuccessScreen(cid);
@@ -428,15 +524,15 @@ public class ProductX {
                 showError(frame, "Invalid User ID or Password");
             }
         });
-        
+
         backBtn.addActionListener(e -> {
             frame.dispose();
             showLoginSignup();
         });
-        
+
         buttonPanel.add(loginBtn);
         buttonPanel.add(backBtn);
-        
+
         // Forgot password link
         JPanel linkPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         linkPanel.setBackground(BG_COLOR);
@@ -445,16 +541,16 @@ public class ProductX {
         forgotPassword.setForeground(PRIMARY_COLOR2);
         forgotPassword.setCursor(new Cursor(Cursor.HAND_CURSOR));
         linkPanel.add(forgotPassword);
-        
+
         forgotPassword.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                JOptionPane.showMessageDialog(frame, 
-                    "Please contact support to reset your password.", 
-                    "Password Reset", 
-                    JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(frame,
+                        "Please contact support to reset your password.",
+                        "Password Reset",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         });
-        
+
         // Add components to main panel
         mainPanel.add(titleLabel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -463,30 +559,30 @@ public class ProductX {
         mainPanel.add(buttonPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         mainPanel.add(linkPanel);
-        
+
         frame.add(mainPanel);
         frame.setVisible(true);
     }
 
     private static void showSignupScreen() {
         JFrame frame = createBaseFrame("Create Account - ProductX", 500, 550);
-        
+
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
         mainPanel.setBackground(BG_COLOR);
-        
+
         // Title
         JLabel titleLabel = new JLabel("Create Account");
         titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(PRIMARY_COLOR2);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         // Form panel
         JPanel formPanel = new JPanel(new GridLayout(5, 1, 0, 10));
         formPanel.setBackground(BG_COLOR);
         formPanel.setBorder(new EmptyBorder(20, 30, 20, 30));
-        
+
         // Name Field
         JPanel namePanel = new JPanel(new BorderLayout(10, 0));
         namePanel.setBackground(BG_COLOR);
@@ -496,13 +592,13 @@ public class ProductX {
         JTextField txtName = new JTextField();
         txtName.setFont(LABEL_FONT);
         txtName.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         addFocusEffect(txtName);
         namePanel.add(nameLabel, BorderLayout.NORTH);
         namePanel.add(txtName, BorderLayout.CENTER);
-        
+
         // Address Field
         JPanel addressPanel = new JPanel(new BorderLayout(10, 0));
         addressPanel.setBackground(BG_COLOR);
@@ -512,13 +608,13 @@ public class ProductX {
         JTextField txtAddress = new JTextField();
         txtAddress.setFont(LABEL_FONT);
         txtAddress.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         addFocusEffect(txtAddress);
         addressPanel.add(addressLabel, BorderLayout.NORTH);
         addressPanel.add(txtAddress, BorderLayout.CENTER);
-        
+
         // Phone Field
         JPanel phonePanel = new JPanel(new BorderLayout(10, 0));
         phonePanel.setBackground(BG_COLOR);
@@ -528,13 +624,13 @@ public class ProductX {
         JTextField txtPhone = new JTextField();
         txtPhone.setFont(LABEL_FONT);
         txtPhone.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         addFocusEffect(txtPhone);
         phonePanel.add(phoneLabel, BorderLayout.NORTH);
         phonePanel.add(txtPhone, BorderLayout.CENTER);
-        
+
         // Password Field
         JPanel passwordPanel = new JPanel(new BorderLayout(10, 0));
         passwordPanel.setBackground(BG_COLOR);
@@ -544,13 +640,13 @@ public class ProductX {
         JPasswordField txtPassword = new JPasswordField();
         txtPassword.setFont(LABEL_FONT);
         txtPassword.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         addFocusEffect(txtPassword);
         passwordPanel.add(passwordLabel, BorderLayout.NORTH);
         passwordPanel.add(txtPassword, BorderLayout.CENTER);
-        
+
         // Confirm Password Field
         JPanel confirmPanel = new JPanel(new BorderLayout(10, 0));
         confirmPanel.setBackground(BG_COLOR);
@@ -560,19 +656,19 @@ public class ProductX {
         JPasswordField txtConfirmPassword = new JPasswordField();
         txtConfirmPassword.setFont(LABEL_FONT);
         txtConfirmPassword.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         addFocusEffect(txtConfirmPassword);
         confirmPanel.add(confirmLabel, BorderLayout.NORTH);
         confirmPanel.add(txtConfirmPassword, BorderLayout.CENTER);
-        
+
         formPanel.add(namePanel);
         formPanel.add(addressPanel);
         formPanel.add(phonePanel);
         formPanel.add(passwordPanel);
         formPanel.add(confirmPanel);
-        
+
         // Password strength indicator
         JPanel strengthPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         strengthPanel.setBackground(BG_COLOR);
@@ -582,13 +678,13 @@ public class ProductX {
         strengthLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         strengthPanel.add(strengthLabel);
         strengthPanel.add(passwordStrength);
-        
+
         txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 String pass = new String(txtPassword.getPassword());
                 int strength = calculatePasswordStrength(pass);
                 passwordStrength.setValue(strength);
-                
+
                 if (strength < 30) {
                     strengthLabel.setText("Password Strength: Weak");
                     passwordStrength.setForeground(Color.RED);
@@ -601,7 +697,7 @@ public class ProductX {
                 }
             }
         });
-        
+
         // Terms and conditions
         JPanel termsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         termsPanel.setBackground(BG_COLOR);
@@ -609,69 +705,69 @@ public class ProductX {
         agreeTerms.setBackground(BG_COLOR);
         agreeTerms.setFont(new Font("Arial", Font.PLAIN, 12));
         termsPanel.add(agreeTerms);
-        
+
         // Button panel
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 10));
         buttonPanel.setBackground(BG_COLOR);
         buttonPanel.setBorder(new EmptyBorder(0, 50, 0, 50));
-        
+
         JButton signupBtn = createStyledButton("Create Account", ACCENT_COLOR);
         JButton backBtn = createStyledButton("Back", Color.GRAY);
-        
+
         signupBtn.addActionListener(e -> {
             String name = txtName.getText();
             String address = txtAddress.getText();
             String phone = txtPhone.getText();
             String password = new String(txtPassword.getPassword());
             String confirmPassword = new String(txtConfirmPassword.getPassword());
-            
+
             // Validate inputs
             if (name.isEmpty() || phone.isEmpty() || password.isEmpty()) {
                 showError(frame, "Fields marked with * cannot be empty!");
                 return;
             }
-            
+
             if (!validatePhone(phone)) {
                 showError(frame, "Please enter a valid phone number");
                 return;
             }
-            
+
             if (!password.equals(confirmPassword)) {
                 showError(frame, "Passwords do not match!");
                 return;
             }
-            
+
             if (calculatePasswordStrength(password) < 30) {
                 showError(frame, "Password is too weak. Please use a stronger password.");
                 return;
             }
-            
+
             if (!agreeTerms.isSelected()) {
                 showError(frame, "You must agree to the Terms and Conditions");
                 return;
             }
-            
+
             String cid = registerUser(name, address, phone, password);
             if (cid != null) {
-                JOptionPane.showMessageDialog(frame, 
-                    "Account created successfully!\nYour User ID (CID): " + cid, 
-                    "Success", 
-                    JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(frame,
+                        "Account created successfully!\nYour User ID (CID): " + cid,
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
                 frame.dispose();
                 showLoginScreen();
             } else {
                 showError(frame, "Registration Failed. Please try again later.");
             }
         });
-        
+
         backBtn.addActionListener(e -> {
             frame.dispose();
             showLoginSignup();
         });
-        
+
         buttonPanel.add(signupBtn);
         buttonPanel.add(backBtn);
-        
+
         // Add components to main panel
         mainPanel.add(titleLabel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -681,26 +777,26 @@ public class ProductX {
         mainPanel.add(termsPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         mainPanel.add(buttonPanel);
-        
+
         frame.add(mainPanel);
         frame.setVisible(true);
     }
-    
+
     private static void addFocusEffect(JComponent component) {
         component.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
                 component.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(PRIMARY_COLOR2),
-                    BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                        BorderFactory.createLineBorder(PRIMARY_COLOR2),
+                        BorderFactory.createEmptyBorder(5, 5, 5, 5)
                 ));
             }
-            
+
             @Override
             public void focusLost(FocusEvent e) {
                 component.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                    BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                        BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                        BorderFactory.createEmptyBorder(5, 5, 5, 5)
                 ));
             }
         });
@@ -714,7 +810,7 @@ public class ProductX {
         frame.setResizable(false);
         return frame;
     }
-    
+
     private static JButton createStyledButton(String text, Color bgColor) {
         JButton button = new JButton(text);
         button.setFont(BUTTON_FONT);
@@ -725,17 +821,17 @@ public class ProductX {
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return button;
     }
-    
+
     private static void showSuccessScreen(String cid) {
         new MainPage(cid, con);  // Pass CID and connection
     }
-    
+
     private static boolean authenticateUser(String cid, String password) {
         try {
             PreparedStatement ps = con.prepareStatement("SELECT Password FROM Customer WHERE CID = ?");
             ps.setString(1, cid);
             ResultSet rs = ps.executeQuery();
-            
+
             if (rs.next()) {
                 String storedHash = rs.getString("Password");
                 String enteredHash = hashPassword(password);
@@ -746,14 +842,14 @@ public class ProductX {
         }
         return false;
     }
-    
+
     private static String registerUser(String name, String address, String phone, String password) {
         try {
             String cid;
             do {
                 cid = generateCID();
             } while (cidExists(cid));
-            
+
             PreparedStatement ps = con.prepareStatement("INSERT INTO Customer (CID, Name, Address, Phone_Number, Password) VALUES (?, ?, ?, ?, ?)");
             ps.setString(1, cid);
             ps.setString(2, name);
@@ -761,57 +857,71 @@ public class ProductX {
             ps.setString(4, phone);
             ps.setString(5, hashPassword(password));
             ps.executeUpdate();
-            
+
             return cid;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
     }
-    
+
     private static boolean cidExists(String cid) throws SQLException {
         PreparedStatement ps = con.prepareStatement("SELECT CID FROM Customer WHERE CID = ?");
         ps.setString(1, cid);
         return ps.executeQuery().next();
     }
-    
+
     protected static String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hashedBytes = md.digest(password.getBytes());
             StringBuilder sb = new StringBuilder();
-            for (byte b : hashedBytes) sb.append(String.format("%02x", b));
+            for (byte b : hashedBytes) {
+                sb.append(String.format("%02x", b));
+            }
             return sb.toString();
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     private static String generateCID() {
         return String.valueOf(10000000 + new Random().nextInt(90000000));
     }
-    
+
     private static int calculatePasswordStrength(String password) {
         int strength = 0;
-        
+
         // Add points for length
-        if (password.length() >= 8) strength += 20;
-        if (password.length() >= 12) strength += 10;
-        
+        if (password.length() >= 8) {
+            strength += 20;
+        }
+        if (password.length() >= 12) {
+            strength += 10;
+        }
+
         // Add points for complexity
-        if (Pattern.compile("[A-Z]").matcher(password).find()) strength += 15;
-        if (Pattern.compile("[a-z]").matcher(password).find()) strength += 15;
-        if (Pattern.compile("[0-9]").matcher(password).find()) strength += 15;
-        if (Pattern.compile("[^A-Za-z0-9]").matcher(password).find()) strength += 25;
-        
+        if (Pattern.compile("[A-Z]").matcher(password).find()) {
+            strength += 15;
+        }
+        if (Pattern.compile("[a-z]").matcher(password).find()) {
+            strength += 15;
+        }
+        if (Pattern.compile("[0-9]").matcher(password).find()) {
+            strength += 15;
+        }
+        if (Pattern.compile("[^A-Za-z0-9]").matcher(password).find()) {
+            strength += 25;
+        }
+
         return Math.min(100, strength);
     }
-    
+
     private static boolean validatePhone(String phone) {
         // Simple validation - can be made more sophisticated
         return phone.matches("\\d{10,15}");
     }
-    
+
     private static void showError(Component parent, String message) {
         JOptionPane.showMessageDialog(parent, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
