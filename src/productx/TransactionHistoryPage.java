@@ -11,16 +11,6 @@ package productx;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.sql.*;
-import java.util.Vector;
-import java.util.Comparator;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -49,29 +39,35 @@ public class TransactionHistoryPage extends JFrame {
         this.cid = cid;
         this.con = con;
 
-        // Set look and feel
+        // Modern look and feel
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         initializeUI();
     }
+
     private void initializeUI() {
-        setTitle("Transaction History");
-        setSize(1300, 800);
+        setTitle("Transaction History Dashboard");
+        setSize(1400, 900);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // Main panel with gradient background
+        // Sophisticated gradient background panel
         JPanel mainPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setPaint(new GradientPaint(
-                    0, 0, new Color(240, 240, 255), 
-                    getWidth(), getHeight(), new Color(220, 220, 255)));
+                
+                // Soft gradient from light blue to white
+                GradientPaint gradient = new GradientPaint(
+                    0, 0, new Color(240, 248, 255), 
+                    getWidth(), getHeight(), new Color(255, 255, 255)
+                );
+                
+                g2d.setPaint(gradient);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
                 g2d.dispose();
             }
@@ -79,7 +75,7 @@ public class TransactionHistoryPage extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setContentPane(mainPanel);
 
-        // Create and add components
+        // Create and add components with modern styling
         mainPanel.add(createFilterPanel(), BorderLayout.NORTH);
         mainPanel.add(createTablePanel(), BorderLayout.CENTER);
         mainPanel.add(createSummaryPanel(), BorderLayout.SOUTH);
@@ -95,12 +91,12 @@ public class TransactionHistoryPage extends JFrame {
         JPanel filterPanel = new JPanel(new GridBagLayout());
         filterPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Styled labels and text fields
-        Font labelFont = new Font("Arial", Font.BOLD, 12);
-        Font fieldFont = new Font("Arial", Font.PLAIN, 12);
+        // Modern, clean typography
+        Font labelFont = new Font("Segoe UI", Font.BOLD, 13);
+        Font fieldFont = new Font("Segoe UI", Font.PLAIN, 12);
 
         // From Date
         gbc.gridx = 0;
@@ -110,7 +106,7 @@ public class TransactionHistoryPage extends JFrame {
         filterPanel.add(fromDateLabel, gbc);
 
         gbc.gridx = 1;
-        fromDateField = createStyledTextField();
+        fromDateField = createStyledTextField(fieldFont);
         filterPanel.add(fromDateField, gbc);
 
         // To Date
@@ -120,7 +116,7 @@ public class TransactionHistoryPage extends JFrame {
         filterPanel.add(toDateLabel, gbc);
 
         gbc.gridx = 3;
-        toDateField = createStyledTextField();
+        toDateField = createStyledTextField(fieldFont);
         filterPanel.add(toDateField, gbc);
 
         // Product Name
@@ -131,7 +127,7 @@ public class TransactionHistoryPage extends JFrame {
         filterPanel.add(productNameLabel, gbc);
 
         gbc.gridx = 1;
-        productNameField = createStyledTextField();
+        productNameField = createStyledTextField(fieldFont);
         filterPanel.add(productNameField, gbc);
 
         // Price Range
@@ -141,7 +137,7 @@ public class TransactionHistoryPage extends JFrame {
         filterPanel.add(minPriceLabel, gbc);
 
         gbc.gridx = 3;
-        minPriceField = createStyledTextField();
+        minPriceField = createStyledTextField(fieldFont);
         filterPanel.add(minPriceField, gbc);
 
         gbc.gridx = 2;
@@ -151,26 +147,29 @@ public class TransactionHistoryPage extends JFrame {
         filterPanel.add(maxPriceLabel, gbc);
 
         gbc.gridx = 3;
-        maxPriceField = createStyledTextField();
+        maxPriceField = createStyledTextField(fieldFont);
         filterPanel.add(maxPriceField, gbc);
 
-        // Buttons
+        // Modern, flat design buttons
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
-        filterButton = createStyledButton("Filter");
+        filterButton = createFlatButton("Filter Transactions", 
+            new Color(52, 152, 219), new Color(41, 128, 185));
         filterButton.addActionListener(e -> filterTransactions());
         filterPanel.add(filterButton, gbc);
 
         gbc.gridx = 2;
-        exportButton = createStyledButton("Export to CSV");
+        exportButton = createFlatButton("Export to CSV", 
+            new Color(46, 204, 113), new Color(39, 174, 96));
         exportButton.addActionListener(e -> exportToCSV());
         filterPanel.add(exportButton, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 4;
-        reportButton = createStyledButton("Generate Report");
+        reportButton = createFlatButton("Generate Detailed Report", 
+            new Color(241, 196, 15), new Color(243, 156, 18));
         reportButton.addActionListener(e -> generateReport());
         filterPanel.add(reportButton, gbc);
 
@@ -178,20 +177,21 @@ public class TransactionHistoryPage extends JFrame {
     }
 
     private JScrollPane createTablePanel() {
-        // Table setup
-        String[] columnNames = {"Buy_ID", "PID", "Product Name", 
-                                "Buying Price", "Buyer CID", "Seller CID", 
+        // Table setup with enhanced styling
+        String[] columnNames = {"Buy ID", "Product ID", "Product Name", 
+                                "Price", "Buyer ID", "Seller ID", 
                                 "Quantity", "Date"};
         tableModel = new DefaultTableModel(columnNames, 0);
         transactionTable = new JTable(tableModel);
 
-        // Enhanced table styling
-        transactionTable.setFont(new Font("Arial", Font.PLAIN, 12));
-        transactionTable.setRowHeight(25);
-        transactionTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
-        transactionTable.getTableHeader().setBackground(new Color(240, 240, 255));
+        // Modern table styling
+        transactionTable.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        transactionTable.setRowHeight(30);
+        transactionTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+        transactionTable.getTableHeader().setBackground(new Color(52, 152, 219));
+        transactionTable.getTableHeader().setForeground(Color.WHITE);
 
-        // Alternating row colors
+        // Enhanced alternating row colors with soft gradient
         transactionTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, 
@@ -201,7 +201,10 @@ public class TransactionHistoryPage extends JFrame {
                                                                   isSelected, hasFocus, 
                                                                   row, column);
                 if (!isSelected) {
-                    c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(240, 240, 255));
+                    c.setBackground(row % 2 == 0 ? 
+                        new Color(240, 248, 255) : 
+                        new Color(230, 240, 250)
+                    );
                 }
                 return c;
             }
@@ -211,11 +214,11 @@ public class TransactionHistoryPage extends JFrame {
         rowSorter = new TableRowSorter<>(tableModel);
         transactionTable.setRowSorter(rowSorter);
 
-        // Scroll pane with styled border
+        // Scroll pane with modern border
         JScrollPane scrollPane = new JScrollPane(transactionTable);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(10, 0, 10, 0),
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY)
+            BorderFactory.createLineBorder(new Color(200, 215, 230), 1)
         ));
 
         return scrollPane;
@@ -226,48 +229,58 @@ public class TransactionHistoryPage extends JFrame {
         summaryPanel.setOpaque(false);
         
         totalSpentLabel = new JLabel("Total Spent: $0.00");
-        totalSpentLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        totalSpentLabel.setForeground(new Color(0, 100, 0));
+        totalSpentLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        totalSpentLabel.setForeground(new Color(39, 174, 96));
         
         summaryPanel.add(totalSpentLabel);
 
         return summaryPanel;
     }
 
-    // Helper methods for creating styled components
-    private JTextField createStyledTextField() {
+    // Improved styled text field
+    private JTextField createStyledTextField(Font font) {
         JTextField textField = new JTextField(15);
-        textField.setFont(new Font("Arial", Font.PLAIN, 12));
+        textField.setFont(font);
         textField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.GRAY),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+            BorderFactory.createLineBorder(new Color(200, 215, 230), 1),
+            BorderFactory.createEmptyBorder(6, 8, 6, 8)
         ));
+        textField.setBackground(Color.WHITE);
         return textField;
     }
 
-    private JButton createStyledButton(String text) {
+    // Modern flat design button
+    private JButton createFlatButton(String text, Color baseColor, Color hoverColor) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setBackground(new Color(100, 150, 255));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        button.setBackground(baseColor);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(80, 120, 200)),
-            BorderFactory.createEmptyBorder(8, 15, 8, 15)
-        ));
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(true);
         
-        // Hover effect
+        // Hover and click effects
         button.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
-                button.setBackground(new Color(80, 130, 255));
+                button.setBackground(hoverColor);
             }
             public void mouseExited(MouseEvent evt) {
-                button.setBackground(new Color(100, 150, 255));
+                button.setBackground(baseColor);
+            }
+            public void mousePressed(MouseEvent evt) {
+                button.setBackground(hoverColor.darker());
+            }
+            public void mouseReleased(MouseEvent evt) {
+                button.setBackground(baseColor);
             }
         });
 
         return button;
     }
+
+    // Existing methods (loadTransactionData, filterTransactions, 
+    // exportToCSV, generateReport) remain the same
+    // ... [Rest of the code remains the same as in the previous implementation]
 
     // Previous methods (loadTransactionData, filterTransactions, 
     // exportToCSV, generateReport) remain the same as in the previous implementation
@@ -550,3 +563,4 @@ public class TransactionHistoryPage extends JFrame {
         });
     }
 }
+
