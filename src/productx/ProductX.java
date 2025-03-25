@@ -257,18 +257,15 @@ public class ProductX {
 
     private static void showAdminLoginScreen() {
         JFrame frame = createBaseFrame("Admin Login", 400, 250);
-
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
         mainPanel.setBackground(BG_COLOR);
-
         // Title
         JLabel titleLabel = new JLabel("Admin Login");
         titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(PRIMARY_COLOR2);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         // Password Field
         JPanel passPanel = new JPanel(new BorderLayout(10, 0));
         passPanel.setBackground(BG_COLOR);
@@ -284,32 +281,30 @@ public class ProductX {
         addFocusEffect(txtPassword);
         passPanel.add(passLabel, BorderLayout.NORTH);
         passPanel.add(txtPassword, BorderLayout.CENTER);
-
         // Button panel
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 10));
         buttonPanel.setBackground(BG_COLOR);
         buttonPanel.setBorder(new EmptyBorder(0, 50, 0, 50));
-
         JButton loginBtn = createStyledButton("Login", PRIMARY_COLOR2);
         JButton backBtn = createStyledButton("Back", Color.GRAY);
-
         loginBtn.addActionListener(e -> {
             String password = new String(txtPassword.getPassword());
-
+            String hashedPassword = hashPassword(password);
+            String predefinedAdminHash = hashPassword("Password@ProductX");
             try {
-                // Check if connection is valid before proceeding
+                // Validate connection explicitly
                 if (con == null || con.isClosed()) {
                     JOptionPane.showMessageDialog(frame,
-                            "Database connection is not established. Please reconnect.",
+                            "Database connection is not established. Reconnecting...",
                             "Connection Error",
                             JOptionPane.ERROR_MESSAGE);
-                    connectToDatabase(); // Attempt to reestablish connection
+                    connectToDatabase();
                     return;
                 }
-
-                if (password.equals("Admin@ProductX")) {
+                // Check if the entered password matches the predefined admin hash
+                if (hashedPassword.equals(predefinedAdminHash)) {
                     frame.dispose();
-                    // Ensure you pass the connection explicitly
+                    // Pass connection explicitly
                     SwingUtilities.invokeLater(() -> new AdminPage(con));
                 } else {
                     JOptionPane.showMessageDialog(frame,
@@ -317,30 +312,26 @@ public class ProductX {
                             "Login Failed",
                             JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (Exception ex) {
+            } catch (SQLException ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(frame,
-                        "An error occurred: " + ex.getMessage(),
+                        "Database error: " + ex.getMessage(),
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
-
         backBtn.addActionListener(e -> {
             frame.dispose();
             showLoginSignup();
         });
-
         buttonPanel.add(loginBtn);
         buttonPanel.add(backBtn);
-
         // Add components to main panel
         mainPanel.add(titleLabel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         mainPanel.add(passPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         mainPanel.add(buttonPanel);
-
         frame.add(mainPanel);
         frame.setVisible(true);
     }
