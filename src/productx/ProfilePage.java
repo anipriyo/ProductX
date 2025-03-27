@@ -631,10 +631,10 @@ public class ProfilePage {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         buttonPanel.setBackground(Color.WHITE);
         
-        JButton btnUpdate = createStyledButton("Update Profile", primaryColor, Color.WHITE);
+        JButton btnUpdate = createStyledButton("Update Profile", Color.WHITE,primaryColor);
         btnUpdate.addActionListener(this::updateDetails);
         
-        JButton btnBack = createStyledButton("Back to Main", secondaryColor, Color.WHITE);
+        JButton btnBack = createStyledButton("Back to Main", Color.WHITE,primaryColor);
         btnBack.addActionListener(e -> backToMain());
         
         buttonPanel.add(btnUpdate);

@@ -152,11 +152,16 @@ public class SalesHistoryPage extends JFrame {
         gbc.gridy = 3;
         gbc.gridwidth = 2;
         filterButton = createStyledButton("Filter");
+        filterButton.setBackground(Color.WHITE);
+        filterButton.setForeground(Color.BLACK);
+//        filterButton.setBorder();
         filterButton.addActionListener(e -> filterSales());
         filterPanel.add(filterButton, gbc);
 
         gbc.gridx = 2;
         exportButton = createStyledButton("Export to CSV");
+        exportButton.setBackground(Color.WHITE);
+        exportButton.setForeground(Color.BLACK);
         exportButton.addActionListener(e -> exportToCSV());
         filterPanel.add(exportButton, gbc);
 
@@ -164,6 +169,8 @@ public class SalesHistoryPage extends JFrame {
         gbc.gridy = 4;
         gbc.gridwidth = 4;
         reportButton = createStyledButton("Generate Report");
+        reportButton.setBackground(Color.WHITE);
+        reportButton.setForeground(Color.BLACK);
         reportButton.addActionListener(e -> generateReport());
         filterPanel.add(reportButton, gbc);
 

@@ -20,6 +20,11 @@ import java.sql.*;
 import java.util.Vector;
 
 public class TransactionHistoryPage extends JFrame {
+    // Theme Color
+    private Color primaryColor1 = new Color(70, 130, 180); // Steel blue
+    private Color lightPrimaryColor = new Color(100, 160, 210); // Lighter variant
+    private Color darkPrimaryColor = new Color(50, 100, 150); // Darker variant
+
     private Connection con;
     private String cid;
     private JTable transactionTable;
@@ -61,10 +66,10 @@ public class TransactionHistoryPage extends JFrame {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g.create();
                 
-                // Soft gradient from light blue to white
+                // Gradient using primary color palette
                 GradientPaint gradient = new GradientPaint(
                     0, 0, new Color(240, 248, 255), 
-                    getWidth(), getHeight(), new Color(255, 255, 255)
+                    getWidth(), getHeight(), primaryColor1.brighter()
                 );
                 
                 g2d.setPaint(gradient);
@@ -103,6 +108,7 @@ public class TransactionHistoryPage extends JFrame {
         gbc.gridy = 0;
         JLabel fromDateLabel = new JLabel("From Date:");
         fromDateLabel.setFont(labelFont);
+        fromDateLabel.setForeground(primaryColor1.darker());
         filterPanel.add(fromDateLabel, gbc);
 
         gbc.gridx = 1;
@@ -113,6 +119,7 @@ public class TransactionHistoryPage extends JFrame {
         gbc.gridx = 2;
         JLabel toDateLabel = new JLabel("To Date:");
         toDateLabel.setFont(labelFont);
+        toDateLabel.setForeground(primaryColor1.darker());
         filterPanel.add(toDateLabel, gbc);
 
         gbc.gridx = 3;
@@ -124,6 +131,7 @@ public class TransactionHistoryPage extends JFrame {
         gbc.gridy = 1;
         JLabel productNameLabel = new JLabel("Product Name:");
         productNameLabel.setFont(labelFont);
+        productNameLabel.setForeground(primaryColor1.darker());
         filterPanel.add(productNameLabel, gbc);
 
         gbc.gridx = 1;
@@ -134,6 +142,7 @@ public class TransactionHistoryPage extends JFrame {
         gbc.gridx = 2;
         JLabel minPriceLabel = new JLabel("Min Price:");
         minPriceLabel.setFont(labelFont);
+        minPriceLabel.setForeground(primaryColor1.darker());
         filterPanel.add(minPriceLabel, gbc);
 
         gbc.gridx = 3;
@@ -144,6 +153,7 @@ public class TransactionHistoryPage extends JFrame {
         gbc.gridy = 2;
         JLabel maxPriceLabel = new JLabel("Max Price:");
         maxPriceLabel.setFont(labelFont);
+        maxPriceLabel.setForeground(primaryColor1.darker());
         filterPanel.add(maxPriceLabel, gbc);
 
         gbc.gridx = 3;
@@ -154,14 +164,12 @@ public class TransactionHistoryPage extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
-        filterButton = createFlatButton("Filter Transactions", 
-            new Color(52, 152, 219), new Color(41, 128, 185));
+        filterButton = createFlatButton("Filter Transactions", primaryColor1, darkPrimaryColor);
         filterButton.addActionListener(e -> filterTransactions());
         filterPanel.add(filterButton, gbc);
 
         gbc.gridx = 2;
-        exportButton = createFlatButton("Export to CSV", 
-            new Color(46, 204, 113), new Color(39, 174, 96));
+        exportButton = createFlatButton("Export to CSV", lightPrimaryColor, primaryColor1);
         exportButton.addActionListener(e -> exportToCSV());
         filterPanel.add(exportButton, gbc);
 
@@ -169,7 +177,7 @@ public class TransactionHistoryPage extends JFrame {
         gbc.gridy = 4;
         gbc.gridwidth = 4;
         reportButton = createFlatButton("Generate Detailed Report", 
-            new Color(241, 196, 15), new Color(243, 156, 18));
+            primaryColor1.brighter(), primaryColor1);
         reportButton.addActionListener(e -> generateReport());
         filterPanel.add(reportButton, gbc);
 
@@ -188,7 +196,7 @@ public class TransactionHistoryPage extends JFrame {
         transactionTable.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         transactionTable.setRowHeight(30);
         transactionTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-        transactionTable.getTableHeader().setBackground(new Color(52, 152, 219));
+        transactionTable.getTableHeader().setBackground(primaryColor1);
         transactionTable.getTableHeader().setForeground(Color.WHITE);
 
         // Enhanced alternating row colors with soft gradient
@@ -218,7 +226,7 @@ public class TransactionHistoryPage extends JFrame {
         JScrollPane scrollPane = new JScrollPane(transactionTable);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(10, 0, 10, 0),
-            BorderFactory.createLineBorder(new Color(200, 215, 230), 1)
+            BorderFactory.createLineBorder(primaryColor1.brighter(), 1)
         ));
 
         return scrollPane;
@@ -230,7 +238,7 @@ public class TransactionHistoryPage extends JFrame {
         
         totalSpentLabel = new JLabel("Total Spent: $0.00");
         totalSpentLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        totalSpentLabel.setForeground(new Color(39, 174, 96));
+        totalSpentLabel.setForeground(primaryColor1.darker());
         
         summaryPanel.add(totalSpentLabel);
 
@@ -242,7 +250,7 @@ public class TransactionHistoryPage extends JFrame {
         JTextField textField = new JTextField(15);
         textField.setFont(font);
         textField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 215, 230), 1),
+            BorderFactory.createLineBorder(primaryColor1.brighter(), 1),
             BorderFactory.createEmptyBorder(6, 8, 6, 8)
         ));
         textField.setBackground(Color.WHITE);

@@ -6,228 +6,6 @@ package productx;
 
 import javax.swing.table.DefaultCellEditor;
 import javax.swing.table.TableCellRenderer;
-
-/**
- *
- * @author annae
- */
-//import javax.swing.*;
-//import java.awt.*;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
-//import java.sql.*;
-//
-//public class MainPage {
-//
-//    private JFrame frame;
-//    private String cid;
-//    private Connection con;
-//    private JLabel lblUserInfo;
-//    private JPanel productPanel;
-//    private JTextField searchField;
-//    private JButton searchButton;
-//
-//    public MainPage(String cid, Connection con) {
-//        this.cid = cid;
-//        this.con = con;
-//        initializeUI();
-//    }
-//
-//private void initializeUI() {
-//    frame = new JFrame("Main Page");
-//    frame.setSize(600, 500);
-//    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//    frame.setLayout(new BorderLayout());
-//
-//    // Debug: Check CID value
-//    System.out.println("Opening MainPage with CID: " + cid);  
-//
-//    // Fetch user name
-//    String userName = getUserName();
-//    System.out.println("Fetched User Name: " + userName); // Debugging
-//
-//    // **HEADER PANEL**
-//    JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-//    lblUserInfo = new JLabel("Welcome, " + userName + " (CID: " + cid + ")");
-//    JButton btnProfile = new JButton("Profile");
-//    JButton btnLogout = new JButton("Logout");
-//
-//    btnProfile.addActionListener(e -> openProfilePage());
-//    btnLogout.addActionListener(e -> logout());
-//
-//    headerPanel.add(lblUserInfo);
-//    headerPanel.add(btnProfile);
-//    headerPanel.add(btnLogout);
-//
-//    // **SEARCH BAR**
-//    JPanel searchPanel = new JPanel();
-//    searchField = new JTextField(20);
-//    searchButton = new JButton("Search");
-//    searchButton.addActionListener(e -> loadProducts(searchField.getText()));
-//    searchPanel.add(searchField);
-//    searchPanel.add(searchButton);
-//
-//   
-//
-//    // **BUTTON PANEL (WITH FIXED SIZE BUTTONS)**
-//    JPanel buttonPanel = new JPanel();
-//    buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-//
-//    JButton btnSaleHistory = new JButton("My Sales");
-//    JButton btnPurchaseHistory = new JButton("My Orders");
-//    JButton btnInventoryUpdate = new JButton("My Inventory");
-//
-//    Dimension buttonSize = new Dimension(150, 40);
-//    btnSaleHistory.setPreferredSize(buttonSize);
-//    btnPurchaseHistory.setPreferredSize(buttonSize);
-//    btnInventoryUpdate.setPreferredSize(buttonSize);
-//
-//    btnSaleHistory.addActionListener(e -> showSaleHistory());
-//    btnPurchaseHistory.addActionListener(e -> showPurchaseHistory());
-//    btnInventoryUpdate.addActionListener(e -> openInventoryPage());
-//
-//    buttonPanel.add(btnSaleHistory);
-//    buttonPanel.add(btnPurchaseHistory);
-//    buttonPanel.add(btnInventoryUpdate);
-//    
-//    // **PRODUCT DISPLAY PANEL**
-//    productPanel = new JPanel();
-//    productPanel.setLayout(new GridLayout(0, 2, 10, 10)); // Grid layout for product cards
-//    JScrollPane scrollPane = new JScrollPane(productPanel);
-//    
-//     // **Combine Header & Search Panels**
-//    JPanel topPanel = new JPanel(new BorderLayout());
-//    topPanel.add(headerPanel, BorderLayout.NORTH);
-//    topPanel.add(buttonPanel, BorderLayout.CENTER);
-//    
-//    // Load products
-//    loadProducts("");
-//
-//    // **ADDING COMPONENTS TO FRAME**
-//    frame.add(topPanel, BorderLayout.NORTH);  // Fixes conflict between header and search
-//    frame.add(scrollPane, BorderLayout.CENTER);
-//    frame.add(searchPanel, BorderLayout.SOUTH);
-//
-//    frame.setVisible(true);
-//}
-//
-//
-//    private String getUserName() {
-//        try {
-//            String query = "SELECT name FROM customer WHERE cid = ?";
-//            PreparedStatement pst = con.prepareStatement(query);
-//            pst.setString(1, cid);
-//            ResultSet rs = pst.executeQuery();
-//            if (rs.next()) {
-//                return rs.getString("name");
-//            } else {
-//                System.out.println("No user found with CID: " + cid); // Debugging
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return "Unknown User";
-//    }
-//
-//    private void showSaleHistory() {
-//        String message = fetchHistory("sold");
-//        JOptionPane.showMessageDialog(frame, message, "My Sales", JOptionPane.INFORMATION_MESSAGE);
-//    }
-//
-//    private void showPurchaseHistory() {
-//        String message = fetchHistory("purchased");
-//        JOptionPane.showMessageDialog(frame, message, "My Orders", JOptionPane.INFORMATION_MESSAGE);
-//    }
-//
-//    private String fetchHistory(String type) {
-//        StringBuilder history = new StringBuilder();
-//        try {
-//            String column = type.equals("sold") ? "seller_cid" : "buyer_cid";
-//            String query = "SELECT product_name, quantity FROM buy_record WHERE " + column + " = ?";
-//            PreparedStatement pst = con.prepareStatement(query);
-//            pst.setString(1, cid);
-//            ResultSet rs = pst.executeQuery();
-//            while (rs.next()) {
-//                history.append(rs.getString("product_name")).append(" - Qty: ").append(rs.getInt("quantity")).append("\n");
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return history.length() > 0 ? history.toString() : "Nothing " + type + " yet.";
-//    }
-//
-//    private void openInventoryPage() {
-//        new InventoryPage(cid,con);
-//    }
-//
-//    private void openProfilePage() {
-//    new ProfilePage(cid, con);
-//}
-//
-//
-//    private void logout() {
-//        frame.dispose(); // Close the MainPage window
-//        SwingUtilities.invokeLater(() -> ProductX.main(new String[]{})); // Restart the application
-//    }
-//
-//    private void loadProducts(String searchQuery) {
-//        try {
-//            String query = "SELECT product_name, price FROM inventory WHERE product_name LIKE ?";
-//            PreparedStatement pst = con.prepareStatement(query);
-//            pst.setString(1, "%" + searchQuery + "%");
-//            ResultSet rs = pst.executeQuery();
-//
-//            productPanel.removeAll(); // Clear previous products
-//            productPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20)); // Arrange horizontally
-//
-//            while (rs.next()) {
-//                String productName = rs.getString("product_name");
-//                double price = rs.getDouble("price");
-//
-//                // Create product card panel
-//                JPanel card = new JPanel();
-//                card.setLayout(new BorderLayout());
-//                card.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Black border
-//                card.setBackground(Color.LIGHT_GRAY);
-//                card.setPreferredSize(new Dimension(200, 120));
-//
-//                // Product name label
-//                JLabel lblProductName = new JLabel(productName, SwingConstants.CENTER);
-//                lblProductName.setFont(new Font("Arial", Font.BOLD, 14));
-//
-//                // Price label
-//                JLabel lblPrice = new JLabel("Price: ₹" + price, SwingConstants.CENTER);
-//                lblPrice.setFont(new Font("Arial", Font.PLAIN, 12));
-//
-//                // Button Panel for Buy & Sell
-//                JPanel buttonPanel = new JPanel();
-//                buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5)); // Centered buttons
-//
-//                JButton btnBuy = new JButton("Buy");
-//                btnBuy.setPreferredSize(new Dimension(60, 25));
-//
-//                JButton btnSell = new JButton("Sell");
-//                btnSell.setPreferredSize(new Dimension(60, 25));
-//
-//                buttonPanel.add(btnBuy);
-//                buttonPanel.add(btnSell);
-//
-//                // Add components to card
-//                card.add(lblProductName, BorderLayout.NORTH);
-//                card.add(lblPrice, BorderLayout.CENTER);
-//                card.add(buttonPanel, BorderLayout.SOUTH);
-//
-//                productPanel.add(card);
-//            }
-//
-//            productPanel.revalidate();
-//            productPanel.repaint();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//}
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -260,7 +38,7 @@ public class MainPage {
 
     private void initializeUI() {
         frame = new JFrame("ProductX - Home");
-        frame.setSize(800, 600);
+        frame.setSize(1000, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.getContentPane().setBackground(Color.WHITE);
@@ -326,7 +104,7 @@ public class MainPage {
         rightHeader.setBackground(primaryColor1);
 
         // Add cart button
-        cartButton = createStyledButton("Cart", Color.WHITE, primaryColor1);
+        cartButton = createStyledButton("Cart", primaryColor1, Color.WHITE);
         cartCountLabel = new JLabel("0");
         cartCountLabel.setFont(new Font("Arial", Font.BOLD, 12));
         cartCountLabel.setForeground(Color.WHITE);
@@ -334,14 +112,16 @@ public class MainPage {
         cartCountLabel.setOpaque(true);
         cartCountLabel.setBorder(new EmptyBorder(2, 5, 2, 5));
         cartCountLabel.setVisible(false);
+
         JPanel cartPanel = new JPanel(new BorderLayout());
-        cartPanel.setBackground(primaryColor1);
+//        cartPanel.setBackground(Color.WHITE);
+//        cartPanel.setForeground(primaryColor1);
         cartPanel.add(cartButton, BorderLayout.CENTER);
         cartPanel.add(cartCountLabel, BorderLayout.EAST);
 
         cartButton.addActionListener(e -> openCartCheckout());
 
-        JButton btnProfile = createStyledButton("Profile", Color.WHITE, primaryColor1);
+        JButton btnProfile = createStyledButton("Profile", primaryColor1, Color.WHITE);
         JButton btnLogout = createStyledButton("Logout", primaryColor1, Color.WHITE);
 
         btnProfile.addActionListener(e -> openProfilePage());
@@ -483,11 +263,6 @@ public class MainPage {
             frame.dispose();
             initializeUI(); // hihi
         });
-//        JButton refreshButton = createStyledButton("Refresh", primaryColor1, Color.WHITE);
-//        clearButton.addActionListener(e -> {
-//            searchField.setText("");
-//            loadProducts("");
-//        });
 
         searchPanel.add(new JLabel("Search Products: "));
         searchPanel.add(searchField);
@@ -499,8 +274,7 @@ public class MainPage {
     }
 
     private JScrollPane createProductPanel() {
-        productPanel = new JPanel();
-        productPanel.setLayout(new WrapLayout(FlowLayout.LEFT, 15, 15));
+        productPanel = new JPanel(new GridBagLayout());
         productPanel.setBackground(Color.WHITE);
         productPanel.setBorder(new EmptyBorder(10, 15, 10, 15));
 
@@ -508,7 +282,10 @@ public class MainPage {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(null);
+
+        // Smooth scrolling
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.getVerticalScrollBar().setBlockIncrement(50);
 
         return scrollPane;
     }
@@ -594,7 +371,10 @@ public class MainPage {
     }
 
     private void contact() {
-        JOptionPane.showMessageDialog(frame, "Contacts page is under development", "Coming Soon", JOptionPane.INFORMATION_MESSAGE);
+        SwingUtilities.invokeLater(() -> {
+            ContactForm form = new ContactForm();
+            form.setVisible(true);
+        });
     }
 
     private void logout() {
@@ -620,6 +400,11 @@ public class MainPage {
             ResultSet rs = pst.executeQuery();
 
             productPanel.removeAll(); // Clear previous products
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.insets = new Insets(10, 10, 10, 10); // Add padding between cards
+            gbc.anchor = GridBagConstraints.WEST;
 
             // Add header to product panel
             if (searchQuery != null && !searchQuery.isEmpty()) {
@@ -637,6 +422,16 @@ public class MainPage {
                 productPanel.add(headerWrapper);
             }
 
+            if (searchQuery != null && !searchQuery.isEmpty()) {
+                ///////////////////
+                JLabel searchResultLabel = new JLabel("Search results for: " + searchQuery);
+                searchResultLabel.setFont(headerFont);
+                gbc.gridwidth = GridBagConstraints.REMAINDER; // Span entire width
+                productPanel.add(searchResultLabel, gbc);
+                gbc.gridy++;
+                gbc.gridwidth = 1; // Reset to default
+            }
+
             int productsFound = 0;
             while (rs.next()) {
                 String productName = rs.getString("product_name");
@@ -644,24 +439,28 @@ public class MainPage {
                 int quantity = rs.getInt("quantity");
                 String sellerName = rs.getString("seller_name");
 
-                // Create product card panel
+                // Create product card
                 JPanel card = createProductCard(productName, price, quantity, sellerName);
-                productPanel.add(card);
+
+                // Add card to grid
+                if (gbc.gridx >= 3) { // Reset to next row after 3 cards
+                    gbc.gridx = 0;
+                    gbc.gridy++;
+                }
+
+                productPanel.add(card, gbc);
+                gbc.gridx++;
                 productsFound++;
             }
 
             // Show "no products found" message if necessary
             if (productsFound == 0) {
+                gbc.gridwidth = GridBagConstraints.REMAINDER;
                 JLabel noProductsLabel = new JLabel("No products found"
                         + (searchQuery.isEmpty() ? "." : " matching '" + searchQuery + "'."));
                 noProductsLabel.setFont(new Font("Arial", Font.ITALIC, 14));
                 noProductsLabel.setForeground(new Color(120, 120, 120));
-
-                JPanel messageWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                messageWrapper.setBackground(Color.WHITE);
-                messageWrapper.add(noProductsLabel);
-
-                productPanel.add(messageWrapper);
+                productPanel.add(noProductsLabel, gbc);
             }
 
             productPanel.revalidate();
@@ -681,7 +480,9 @@ public class MainPage {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
         card.setBackground(Color.WHITE);
-        card.setPreferredSize(new Dimension(220, 180));
+        card.setPreferredSize(new Dimension(220, 220));
+        card.setMaximumSize(new Dimension(220, 220));
+        card.setMinimumSize(new Dimension(220, 220));
 
         // Product name label
         JLabel lblProductName = new JLabel(productName);
@@ -725,9 +526,9 @@ public class MainPage {
 
         // Add to Cart button
         JButton btnAddToCart = new JButton("Add to Cart");
-        btnAddToCart.setBackground(Color.WHITE);
-        btnAddToCart.setForeground(primaryColor1);
-        btnAddToCart.setBorder(BorderFactory.createLineBorder(primaryColor1));
+        btnAddToCart.setBackground(primaryColor1);
+        btnAddToCart.setForeground(Color.RED);
+//        btnAddToCart.setBorder(BorderFactory.createLineBorder(primaryColor1));
         btnAddToCart.setFocusPainted(false);
         btnAddToCart.addActionListener(e -> handleAddToCart(productName, price, sellerName));
 
